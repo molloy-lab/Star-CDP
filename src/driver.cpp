@@ -45,9 +45,7 @@ const std::string help =
 "       Using equal weight for all mutations\n\n"
 "[(-memory)]\n"
 "       The amount of memory given to ASTRAL.(Defualt:16000M)\n\n"
-"[(-threshold)]\n"
-"		The threshold for greedy taxa addition.(Defualt:100)\n\n"
-"Contact: Post issue to Github (https://github.com/molloy-lab/(TODO))\n"
+"Contact: Post issue to Github (https://github.com/molloy-lab/Star-CDP)\n"
 "        or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)\n"
 "====================================================================================\n\n";
 
