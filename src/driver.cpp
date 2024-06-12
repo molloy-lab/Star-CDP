@@ -1,3 +1,28 @@
+/*
+
+MIT License 
+Copyright (c) 2024 Junyan Dai and Erin Molloy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
 #include<cstdio>
 #include<iostream>
 #include<fstream>
@@ -11,42 +36,44 @@
 using namespace std;
 const std::string help =
 "===================================== Star-CDP =====================================\n"
-"Star-CDP is a program that solves the large Star parsimony problem for r-states\n"
-"characters (missing values allowed) within a clade-constrained version of tree space.\n\n"
-"USAGE for Large Star problem:\n"
-"./star-cdp -i <input characters file> -m <mutations probability file> -g <outgroup name> -o <output file>\n\n"
-"USAGE for small Star parsimony problem:\n"
+"Star-CDP is a program that solves the large Star Homoplasy parsimony within a\n"
+"clade-constrained version of tree space.\n\n"
+"USAGE for large parsimony problem:\n"
+"./star-cdp -i <input characters file>\n"
+"           -m <mutations probability file>\n"
+"           -t <trees from heuritic search or other sources>\n"
+"           -g <outgroup or unedited cell label>\n"
+"           -o <output file>\n\n"
+"USAGE for small parsimony problem, i.e., computing score for given tree:\n"
 "./star-cdp -i <input characters file> -q <input species tree>\n\n"
 "OPTIONS:\n"
 "[-h|--help]\n"
 "        Prints this help message.\n"
 "(-i|--input) <input characters file>\n"
-"        Name of file containing input characters in nexus format (required)\n"
-"(-x|-g|--outgroup) <outgroup name>\n"
-"        Comma separated list of outgroup taxa used to root solution space\n"
+"        Name of file containing input characters in CSV format\n"
+"(-x|-g|--outgroup) <outgroup or unedited cell label>\n"
+"        Comma separated list of outgroup cells (e.g. unedited cell) used to root\n"
+"        solution space\n"
 "(-m|--mutations) <mutations probability file>\n"
 "        Name of file containing mutations probability\n"
-"        space with ASTRAL. If no file is specified, characters will be treated as\n"
-"        rooted trees with at most one internal branch.\n"
 "[(-t|--trees) <input trees file>]\n"
-"       Name of file containing trees in newick format for constructing solution\n"
-"       space with ASTRAL. If no file is specified, characters will be treated as\n"
-"       rooted trees with at most one internal branch.\n\n"
+"        Name of file containing trees in newick format for constructing solution\n"
+"        space with ASTRAL\n"
 "[(-q) <input species file>]\n"
 "        Name of file containing species trees in newick format\n"
-"[(-k)]\n"
-"        Write characters as rooted trees with one internal branch and exit\n"
+//"[(-k)]\n"
+//"        Write characters as rooted trees with one internal branch and exit\n"
 "[(-o|--output) <output file>]\n"
-"        prefix of file for writing output species tree (default: stdout)\n\n"
+"        Prefix of file for writing output species tree (default: stdout)\n"
 "[(-nosupp)]\n"
-"       Turn off the support value \n"
-"			(which is the fraction of a clades show up in all optimal solutions)\n\n"
+"        Turn off the calculation of clade support, which is the fraction of optimal\n"
+"        solutions clade appears in\n"
 "[(-e|--equal)]\n"
-"       Using equal weight for all mutations\n\n"
+"        Using equal weight for all mutations\n"
 "[(-memory)]\n"
-"       The amount of memory given to ASTRAL.(Defualt:16000M)\n\n"
+"        Amount of memory given to ASTRAL.(Defualt:16000M)\n\n"
 "Contact: Post issue to Github (https://github.com/molloy-lab/Star-CDP)\n"
-"        or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)\n"
+"         or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)\n"
 "====================================================================================\n\n";
 
 std::vector<std::string> get_outgroup(std::string oname) {
