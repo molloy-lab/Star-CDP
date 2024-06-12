@@ -73,7 +73,9 @@ const std::string help =
 "[(-memory)]\n"
 "        Amount of memory given to ASTRAL.(Defualt:16000M)\n\n"
 "Contact: Post issue to Github (https://github.com/molloy-lab/Star-CDP)\n"
-"         or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)\n"
+"         or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)\n\n"
+"If you use Star-CDP in your work, please cite:\n"
+"  Dai and Molloy, 2024, Star-CDP, https://github.com/molloy-lab/Star-CDP/\n"
 "====================================================================================\n\n";
 
 std::vector<std::string> get_outgroup(std::string oname) {

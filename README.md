@@ -80,5 +80,8 @@ OPTIONS:
 
 Contact: Post issue to Github (https://github.com/molloy-lab/Star-CDP)
          or email Junyan Dai (jdai1234@umd.edu) & Erin Molloy (ekmolloy@umd.edu)
+
+If you use Star-CDP in your work, please cite:
+  Dai and Molloy, 2024, Star-CDP, https://github.com/molloy-lab/Star-CDP/
 ====================================================================================
 ```
