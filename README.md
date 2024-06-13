@@ -44,32 +44,34 @@ Star-CDP is a program that solves the large Star Homoplasy parsimony within a
 clade-constrained version of tree space.
 
 USAGE for large parsimony problem:
-./star-cdp -i <input characters file>
-           -m <mutations probability file>
-           -t <trees from heuritic search or other sources>
-           -g <outgroup or unedited cell label>
-           -o <output file>
+./star-cdp -i <input character file>
+           -m <input mutation probability file>
+           -t <input trees from heuritic search or other sources>
+           -g <label of outgroup (unedited / ancestor)>
+           -o <output tree file>
 
 USAGE for small parsimony problem, i.e., computing score for given tree:
-./star-cdp -i <input characters file> -q <input species tree>
+./star-cdp -i <input character file> 
+           -m <input mutation probability file>
+           -q <input tree for scoring>
 
 OPTIONS:
 [-h|--help]
         Prints this help message.
 (-i|--input) <input characters file>
         Name of file containing input characters in CSV format
-(-x|-g|--outgroup) <outgroup or unedited cell label>
-        Comma separated list of outgroup cells (e.g. unedited cell) used to root
-        solution space
 (-m|--mutations) <mutations probability file>
         Name of file containing mutations probability
 [(-t|--trees) <input trees file>]
         Name of file containing trees in newick format for constructing solution
         space with ASTRAL
+(-x|-g|--outgroup) <outgroup or unedited cell label>
+        Comma separated list of outgroup cells (e.g. unedited cell) used to root
+        solution space
 [(-q) <input species file>]
-        Name of file containing species trees in newick format
+        Name of file containing tree for scoring in newick format
 [(-o|--output) <output file>]
-        Prefix of file for writing output species tree (default: stdout)
+        Prefix of file for writing output tree (default: stdout)
 [(-nosupp)]
         Turn off the calculation of clade support, which is the fraction of optimal
         solutions clade appears in
