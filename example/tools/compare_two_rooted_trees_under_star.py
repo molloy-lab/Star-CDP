@@ -33,7 +33,6 @@ def infer_states_under_star_at_internal_helper(states_below):
 
 
 def infer_states_under_star_at_leaf(node, cmat):
-    
     states_at_leaf = cmat.loc[node.label].values.tolist()
     # states_at_leaf = cmat.loc[int(node.label)].values.tolist()
     
@@ -344,12 +343,6 @@ def main(args):
     tree1 = read_tree(args.tree1, contract=args.contract1)
     #print(tree1)
     
-    if args.extract_tree1 == 1:
-        tree1_path = args.tree1[:-4]
-        tree1_path += str(args.contract1) + "_contracted.tre"
-        with open(tree1_path, 'w') as file:
-            file.write(tree1.newick() + '\n')
-    
     if args.contract1 == 1:
         infer_muts_under_star_model(tree1, chars)
     if args.contract1 > 0:
@@ -363,10 +356,13 @@ def main(args):
     if args.contract2 > 0:
         contract_zero_length_branches(tree2)
     
-    if args.extract_tree2 == 1:
-        # tree2_path = args.tree2[:-4]
-        # tree2_path += str(args.contract2) + "_contracted.tre"
-        tree2_path = args.tree2_path
+    if args.extract_tree1:
+        tree1_path = str(args.tree1) + "-contracted" + str(args.contract1)
+        with open(tree1_path, 'w') as file:
+            file.write(tree1.newick() + '\n')
+
+    if args.extract_tree2:
+        tree2_path = str(args.tree2) + "-contracted" + str(args.contract2)
         with open(tree2_path, 'w') as file:
             file.write(tree2.newick() + '\n')
 
@@ -408,9 +404,11 @@ if __name__ == "__main__":
                                 + "  0 = do not contract (default)\n"
                                 + "  1 = contract branches with no mutations, using mutations inferred under star homoplasy model (requires -m option)\n"
                                 + "  2 = contract branches with no mutations, using mutations from input newick string")
-    parser.add_argument("-ex1", "--extract_tree1", type=int, default=0, help="0 = do nothing\n" + "1 = extract newick string for tree 1 from nwk to tre\n");
+    parser.add_argument("-ex1", "--extract_tree1", action="store_true",
+                        help="Save tree 1 after contracting branches");
     
-    parser.add_argument("-ex2", "--extract_tree2", type=int, default=0, help="0 = do nothing\n" + "1 = extract newick string for tree 2 from nwk to tre\n");
+    parser.add_argument("-ex2", "--extract_tree2", action="store_true",
+                        help="Save tree 2 after contracting branches");
     
     parser.add_argument("-c2", "--contract2", type=int, default=0,
                         help="Method for contracting edges in tree 2")
@@ -420,8 +418,6 @@ if __name__ == "__main__":
 
     parser.add_argument("-r", "--root", type=str, default=None,
                         help="Name of *leaf* node representing unedited root cell")
-
-    parser.add_argument('-t2p', '--tree2_path', type=str, default=None, help='File to write the extract tree 2')
 
     main(parser.parse_args())
 

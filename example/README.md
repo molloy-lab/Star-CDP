@@ -83,5 +83,21 @@ python3.10 ../tools/compare_two_rooted_trees_under_star.py \
 ```
 returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` on Linux, where it goes number of leaves, number of internal branches in t1, number of internatl branches in t2, number of branches in t1 that are missing from t2, number of branches in t2 that are missing from t1, number of shared branches, and ratios.
 
+You can also compare to
+```
+python3.10 ../../tools/compare_two_rooted_trees_under_star.py \
+    -t1 star_cdp_strict_consensus.tre \
+    -t2 startle_ilp.tre \
+    -c1 1 -c2 1 -ex1 -ex2 \
+    -m ../input/3513_NT_T1_Fam_pruned_character_matrix.csv 
+```
+returns `86,13,15,8,10,5,0.615385,0.666667,0.333333`. Then, if you can also repeat taking the RF of trees with mutationless branches contracted
+
+```
+python3.10 ../../tools/compare_two_trees.py \
+    -t1 star_cdp_strict_consensus.tre-contracted1 \
+    -t2 startle_ilp.tre-contracted1
+```
+you get the same thing: `86,86,86,13,15,8,10,5`.
 
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).

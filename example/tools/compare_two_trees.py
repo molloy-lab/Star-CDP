@@ -69,7 +69,11 @@ def compare_two_trees(tree1, tree2):
         if not branch in brset1:
             fp += 1
 
-    return [n1, n2, nl, i1, i2, fn, fp]
+    tp = i1 - fn
+    if tp != i2 - fp:
+        sys.exit("Something bad happened!")
+
+    return [n1, n2, nl, i1, i2, fn, fp, tp]
 
 
 def main(args):
@@ -94,11 +98,11 @@ def main(args):
 
     # Compare two trees
     info = compare_two_trees(tree1, tree2)
-    [n1, n2, nl, i1, i2, fn, fp] = info
+    [n1, n2, nl, i1, i2, fn, fp, tp] = info
 
     # Write CSV to standard output
-    sys.stdout.write("%s%d,%d,%d,%d,%d,%d,%d\n" \
-        % (prefix, n1, n2, nl, i1, i2, fn, fp))
+    sys.stdout.write("%s%d,%d,%d,%d,%d,%d,%d,%d\n" \
+        % (prefix, n1, n2, nl, i1, i2, fn, fp, tp))
 
 
 if __name__ == "__main__":
