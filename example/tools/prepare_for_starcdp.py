@@ -142,9 +142,12 @@ def main(args):
 
     # Add FAKEROOT to cmat_df
     columns = list(cmat_df.columns)
-    new_row = pandas.Series(0, index=columns)
-    new_row[0] = "FAKEROOT"
-    cmat_df = pandas.concat([cmat_df, pandas.DataFrame([new_row])], ignore_index=True)
+    nchar = len(columns) - 1
+    new_df = pandas.DataFrame(["FAKEROOT"] + [0] * nchar, index=columns)
+    #new_row = pandas.Series(0, index=columns)
+    #new_row[0] = "FAKEROOT"
+    #cmat_df = pandas.concat([cmat_df, pandas.DataFrame([new_row])], ignore_index=True)
+    cmat_df = pandas.concat([cmat_df, new_df], ignore_index=True)
     cmat_df.to_csv(args.input + "-fakeroot", index=False)
 
     print("Finished writing paup nex file for " + args.output)
