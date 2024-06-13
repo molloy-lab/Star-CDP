@@ -82,8 +82,7 @@ python3.10 ../tools/compare_two_rooted_trees_under_star.py \
     -m input/3513_NT_T1_Fam_pruned_character_matrix.csv \
     -c1 1 -c2 1
 ```
-returns `86,18,15,12,9,6,0.666667,0.600000,0.400000` where it goes number of leaves, number of internal branches in t1, number of internatl branches in t2, number of branches in t1 that are missing from t2, number of branches in t2 that are missing from t1, number of shared branches, and ratios.
+returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` on Linux, where it goes number of leaves, number of internal branches in t1, number of internatl branches in t2, number of branches in t1 that are missing from t2, number of branches in t2 that are missing from t1, number of shared branches, and ratios.
 
 
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
-
