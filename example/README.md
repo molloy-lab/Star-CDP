@@ -49,7 +49,7 @@ cd ..
 Lastly, we remove the `FAKEROOT`
 
 ```
-python3.10 ../../tools/postprocess_for_starcdp.py \
+python3.10 ../../tools/postprocess_from_starcdp.py \
     -i starcdp \
     -o nofakeroot
 ```
