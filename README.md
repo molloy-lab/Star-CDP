@@ -2,7 +2,7 @@ Star-CDP
 =========
 Star-CDP is a method for estimating cell lineage trees from CRISPR/Cas9-induced mutations under the Star Homoplasy parsimony criterion score ([Sashittal et al., 2023](https://doi.org/10.1016/j.cels.2023.11.005)). 
 The input characters have 0 representing the unedited state, positive integers  representing edited states, and -1 representing the missing or ambiguous state. 
-Under the Star Homoplasy assumption, only mutations between the unedited state (0) and edited states are allowed.
+Under the Star Homoplasy assumption, only mutations between the unedited state (0) and edited states are allowed (note that this is equivalent to Camin-Sokal parsimony for binary characters, where 0 is the ancestral/unedited state and 1 is the only derived/edited state).
 Our approach is novel in that it is guaranteed to return an optimal solution to the problem that obeys the set of constraints (clades aka subsets of cells) given as input.
 These constraints can be generated from candidate cell lineage trees recovered in prior analsyes or heuristic search, as described in [this example](example/README.md).
 
