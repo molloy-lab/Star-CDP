@@ -143,10 +143,13 @@ def main(args):
     # Add FAKEROOT to cmat_df
     columns = list(cmat_df.columns)
     nchar = len(columns) - 1
-    new_df = pandas.DataFrame(["FAKEROOT"] + [0] * nchar, index=columns)
-    #new_row = pandas.Series(0, index=columns)
-    #new_row[0] = "FAKEROOT"
-    #cmat_df = pandas.concat([cmat_df, pandas.DataFrame([new_row])], ignore_index=True)
+    rows = []
+    row = {}
+    row[columns[0]] = "FAKEROOT"
+    for col in columns[1:]:
+        row[col] = 0
+    rows.append(row)
+    new_df = pandas.DataFrame(rows, columns=columns)
     cmat_df = pandas.concat([cmat_df, new_df], ignore_index=True)
     cmat_df.to_csv(args.input + "-fakeroot", index=False)
 
