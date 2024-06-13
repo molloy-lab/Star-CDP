@@ -54,44 +54,35 @@ python3.10 ../../tools/postprocess_for_starcdp.py \
     -o nofakeroot
 ```
 
-
+If we want to check the score, we can use
 ```
 ../../src/star-cdp \
     -q nofakeroot_starcdp_one_sol.tre \
     -i input/3513_NT_T1_Fam_pruned_character_matrix.csv \
-    -m input/3513_NT_T1_Fam_priors.csv | | grep "score"
+    -m input/3513_NT_T1_Fam_priors.csv | \
+    grep "score"
 ```
-The star homoplasy  score: 306.945
-
-../../src/star-cdp -q output/startle_nni_python.tre -i input/3513_NT_T1_Fam_pruned_character_matrix.csv -m input/3513_NT_T1_Fam_priors.csv  | grep "score"
-The star homoplasy  score: 312.648
+returns `The star homoplasy  score: 306.945`.
 
 ```
-./../src/star-cdp -q output/startle_ilp.tre -i input/3513_NT_T1_Fam_pruned_character_matrix.csv -m input/3513_NT_T1_Fam_priors.csv  | grep "score"
+../../src/star-cdp \
+    -q output/startle_ilp.tre \
+    -i input/3513_NT_T1_Fam_pruned_character_matrix.csv \
+    -m input/3513_NT_T1_Fam_priors.csv | \
+    grep "score"
 ```
-The star homoplasy  score: 315.507
+return `The star homoplasy  score: 315.507`.
 
-../../src/star-cdp -q output/startle_nni_cpp.tre -i input/3513_NT_T1_Fam_pruned_character_matrix.csv -m input/3513_NT_T1_Fam_priors.csv  | grep "score"
-The star homoplasy  score: 316.184
+Now you can compare the trees after contracting mutationless branches,
 
-
-python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 nofakeroot_starcdp_strict_consensus.tre -t2 output/startle_ilp.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,18,15,12,9,6,0.666667,0.600000,0.400000
-
-python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 output/star_cdp_strict_consensus.tre -t2 output/startle_ilp.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,13,15,8,10,5,0.615385,0.666667,0.333333
-
-python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 nofakeroot_starcdp_strict_consensus.tre -t2 output/startle_nni_python.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,18,19,11,12,7,0.611111,0.631579,0.368421
-
-$ python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 output/star_cdp_strict_consensus.tre -t2 output/startle_nni_python.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,13,19,6,12,7,0.461538,0.631579,0.368421
-
-python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 nofakeroot_starcdp_strict_consensus.tre -t2 output/startle_nni_cpp.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,18,13,13,8,5,0.722222,0.615385,0.384615
-
-python3.10 ../tools/compare_two_rooted_trees_under_star.py -t1 output/star_cdp_strict_consensus.tre -t2 output/startle_nni_cpp.tre -m input/3513_NT_T1_Fam_pruned_character_matrix.csv  -c1 1 -c2 1
-86,13,13,9,9,4,0.692308,0.692308,0.307692
+```
+python3.10 ../tools/compare_two_rooted_trees_under_star.py \
+    -t1 nofakeroot_starcdp_strict_consensus.tre \
+    -t2 output/startle_ilp.tre \
+    -m input/3513_NT_T1_Fam_pruned_character_matrix.csv \
+    -c1 1 -c2 1
+```
+returns `86,18,15,12,9,6,0.666667,0.600000,0.400000` where it goes number of leaves, number of internal branches in t1, number of internatl branches in t2, number of branches in t1 that are missing from t2, number of branches in t2 that are missing from t1, number of shared branches, and ratios.
 
 
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
