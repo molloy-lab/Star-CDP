@@ -524,9 +524,12 @@ def write_mutation_counts(mutcounts, cmat, priors, outputf):
 
 
 def main(args):
+    "Works except when file starts with comma"
+
     # Read files
     cmat = CharacterMatrix(args.chars)
     cmat.read_to_pandas_df()
+
     tree = treeswift.read_tree(args.tree, schema="newick")
     if args.priors is None:
         priors = None
