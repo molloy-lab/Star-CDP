@@ -3,7 +3,6 @@ Example for KPTracer
 
 We now show how to run Star-CDP using a KPTracer data set from [Yang, Jones, et al. (2022)](https://doi.org/10.1016/j.cell.2022.04.015); also analyzed by [Sashittal, Schmidt, et al. (2023)](https://doi.org/10.1016/j.cels.2023.11.005). We preprocessed the files as described [here](README_dataprep.md).
 
-
 To run Star-CDP on the data set `3513_NT_T1_Fam`, we first need to go to the directory
 ```
 cd example/3513_NT_T1_Fam/input
