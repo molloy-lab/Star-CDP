@@ -2,13 +2,13 @@ Star-CDP
 =========
 Star-CDP is a method for estimating cell lineage trees from CRISPR/Cas9-induced mutations under the Star Homoplasy parsimony criterion score ([Sashittal et al., 2023](https://doi.org/10.1016/j.cels.2023.11.005)). 
 The input characters have 0 representing the unedited state, positive integers  representing edited states, and -1 representing the missing or ambiguous state. 
-Under the Star Homoplasy assumption, only mutations between the united state (0) and edited states are allowed.
-Our approach is novel in that it is guaranteed to return an optimal solution to the problem that obeys the set of constraints (clades) given as input.
-These constraints can be generated from trees recovered in prior analsyes or heuristic search, as described in [this example](example/README.md).
+Under the Star Homoplasy assumption, only mutations between the unedited state (0) and edited states are allowed.
+Our approach is novel in that it is guaranteed to return an optimal solution to the problem that obeys the set of constraints (clades aka subsets of cells) given as input.
+These constraints can be generated from candidate cell lineage trees recovered in prior analsyes or heuristic search, as described in [this example](example/README.md).
 
 Usage
 -----
-To build, Dollo-CDP use commands:
+To build, Star-CDP use commands:
 ```
 git clone https://github.com/molloy-lab/Star-CDP.git
 cd Star-CDP/src
@@ -73,6 +73,8 @@ OPTIONS:
 [(-nosupp)]
         Turn off the calculation of clade support, which is the fraction of optimal
         solutions clade appears in
+[(-consensus)]
+        Compute greedy, majority, and strict consensus based on clade support
 [(-e|--equal)]
         Using equal weight for all mutations
 [(-memory)]
