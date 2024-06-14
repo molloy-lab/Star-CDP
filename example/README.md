@@ -12,7 +12,7 @@ Then we need to perform heuristic search with [PAUP*](https://paup.phylosolution
 
 To run PAUP*, we need to create a binary version of character matrix, relabel the leaves to be suitable for PAUP*, and add unedited cell, called `FAKEROOT`.
 ```
-python3.10 ../../tools/prepare_for_paup_and_starcdp.py \
+python3 ../../tools/prepare_for_paup_and_starcdp.py \
     -i 3513_NT_T1_Fam_pruned_character_matrix.csv \
     -w 3513_NT_T1_Fam_priors.csv \
     -o 3513_NT_T1_Fam_
@@ -42,14 +42,14 @@ However, these trees are not on the same label set as the original character mat
 
 ```
 cd ../output
-python3.10 ../../tools/postprocess_from_paup.py \
+python3 ../../tools/postprocess_from_paup.py \
     -i ../input/3513_NT_T1_Fam_paup_scon_high_score.tree \
     -n ../input/3513_NT_T1_Fam_paup_leaf_map.csv \
     -o rerun_paup_scon_high_score.tree
 ```
 
 ```
-python3.10 ../../tools/postprocess_from_paup_for_starcdp.py \
+python3 ../../tools/postprocess_from_paup_for_starcdp.py \
     -i ../input/3513_NT_T1_Fam_paup_all_saved_trees.trees \
     -n ../input/3513_NT_T1_Fam_paup_leaf_map.csv \
     -o rerun_paup_all_saved_trees.trees
@@ -68,7 +68,7 @@ Now we can give these rooted trees as constraints to Star-CDP.
 
 Lastly, we remove the `FAKEROOT` from the output of Star-CDP.
 ```
-python3.10 ../../tools/postprocess_from_starcdp.py \
+python3 ../../tools/postprocess_from_starcdp.py \
     -i rerun_star_cdp \
     -o nofakeroot
 ```
@@ -95,24 +95,35 @@ returns `The star homoplasy  score: 315.507`.
 
 For downstream analyses, we recommend using the **strict consensus tree**, stored in this file: `rerun_star_cdp_strict_consensus.tre-nofakeroot`.
 
-For example, we can compare the two rooted trees after contracting mutationless branches,
+For example, we can compare this tree to the Startle-ILP tree after contracting mutationless branches,
 ```
-python3.10 ../../tools/compare_two_rooted_trees_under_star.py \
-    -t1 rerun_star_cdp_one_sol.tre-nofakeroot \
+python3 ../../tools/compare_two_rooted_trees_under_star.py \
+    -t1 rerun_star_cdp_strict_consensus.tre-nofakeroot \
     -t2 startle_ilp.tre \
     -c1 1 -c2 1 -ex1 -ex2 \
     -m ../input/3513_NT_T1_Fam_pruned_character_matrix.csv 
 ```
-returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` on Linux, where the numbers indicate number of leaves/cells, number of internal branches in t1, number of internatl branches in t2, number of internal branches in t1 that are missing from t2, number of internal branches in t2 that are missing from t1, number of shared branches, and related ratios.
+which returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` for our analyses run on Linux.
+* 86 = the numbers indicate number of leaves/cells
+* 13 = number of internal branches in t1
+* 15 = number of internal branches in t2
+* 8 = number of internal branches in t1 that are missing from t2
+* 10 = number of internal branches in t2 that are missing from t1
+* 5 = number of shared branches
+* 0.615385 = 8 / 13
+* 0.666667 = 10 / 15
+* 0.333333 = 5 / 15
 Importantly, this comparison assumes the input trees are rooted properly.
 We also included `-ex` flags, it will save the trees with mutationless branches contracted for later use. 
 
+We can also compare Star-CDP-SCon to PAUP*-SCon, with the command:
 ```
-python3.10 ../../tools/compare_two_rooted_trees_under_star.py \
-    -t1 rerun_star_cdp_one_sol.tre-nofakeroot \
+python3 ../../tools/compare_two_rooted_trees_under_star.py \
+    -t1 rerun_star_cdp_strict_consensus.tre-nofakeroot \
     -t2 rerun_paup_scon_high_score.tree \
     -c1 1 -c2 1 -ex2 \
     -m ../input/3513_NT_T1_Fam_pruned_character_matrix.csv 
 ```
+which returns `86,13,9,4,0,9,0.307692,0.000000,1.000000` for our analyses run on Linux.
 
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
