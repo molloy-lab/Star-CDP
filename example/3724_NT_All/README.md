@@ -8,7 +8,7 @@ cd Star-CDP/example/3724_NT_All/input
 
 Then we need to perform heuristic search with [PAUP*](https://paup.phylosolutions.com). 
 
-To run PAUP*, we need to create a binary version of character matrix, relabel the leaves to be suitable for PAUP*, and add unedited cell, called `FAKEROOT`.
+To run PAUP*, we need to create a binary version of character matrix, relabel the leaves to be suitable for PAUP*, and two add unedited cells, called `FAKEROOT` and `FAKEROOT2`.
 ```
 python3 ../../tools/prepare_for_paup_and_starcdp.py \
     -i 3724_NT_All_pruned_character_matrix.csv \
