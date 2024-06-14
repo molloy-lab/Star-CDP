@@ -87,10 +87,11 @@ def binarize(df, priors=None):
 def write_to_nexus(df:pandas.DataFrame, weights:list, output:str):
     binary_file = output + "paup_binary.nex"
     leaf_map_file = output + "paup_leaf_map.csv"
-    all_trees_file = output + "paup_all_saved_trees.trees"
-    all_scores_file = output + "paup_all_saved_trees.scores"
-    high_trees_file = output + "paup_high_score_saved_trees.trees"
-    high_scores_file = output + "paup_high_score_saved_trees.scores"
+    all_trees_file = output + "paup_all_saved.trees"
+    all_scores_file = output + "paup_all_saved.scores"
+    one_high_tree_file = output + "paup_one_high_score.tree"
+    high_trees_file = output + "paup_high_score_saved.trees"
+    high_scores_file = output + "paup_high_score_saved.scores"
     consensus_file = output + "paup_scon_high_score.tree"
     paup_file = output + "paup_camsok_hsearch_fast.nex"
 
@@ -148,6 +149,7 @@ def write_to_nexus(df:pandas.DataFrame, weights:list, output:str):
         fp.write("SortTrees;\n")
         fp.write(f"pscore all/scorefile={all_scores_file};\n")
         fp.write(f"savetrees File={all_trees_file} root=yes trees=all format=newick;\n")
+        fp.write(f"savetrees File={one_high_tree_file} root=yes trees=1 format=newick;\n")
         fp.write("filter best;\n")
         fp.write(f"pscore all/scorefile={high_scores_file};\n")
         fp.write(f"savetrees File={high_trees_file} root=yes trees=all format=newick;\n")
