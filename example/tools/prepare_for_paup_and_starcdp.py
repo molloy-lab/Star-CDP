@@ -149,10 +149,10 @@ def write_to_nexus(df:pandas.DataFrame, weights:list, output:str):
         fp.write("SortTrees;\n")
         fp.write(f"pscore all/scorefile={all_scores_file};\n")
         fp.write(f"savetrees File={all_trees_file} root=yes trees=all format=newick;\n")
-        fp.write(f"savetrees File={one_high_tree_file} root=yes trees=1 format=newick;\n")
+        fp.write(f"savetrees File={one_high_tree_file} root=yes from=1 to=1 format=newick;\n")
         fp.write("filter best;\n")
-        fp.write(f"pscore all/scorefile={high_scores_file};\n")
-        fp.write(f"savetrees File={high_trees_file} root=yes trees=all format=newick;\n")
+        #fp.write(f"pscore all/scorefile={high_scores_file};\n")
+        #fp.write(f"savetrees File={high_trees_file} root=yes trees=all format=newick;\n")
         fp.write(f"contree all/strict=yes treefile={consensus_file};\n")
         fp.write("END;\n")
 

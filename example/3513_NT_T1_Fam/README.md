@@ -8,7 +8,7 @@ cd Star-CDP/example/3513_NT_T1_Fam/input
 
 Then we need to perform heuristic search with [PAUP*](https://paup.phylosolutions.com). 
 
-To run PAUP*, we need to create a binary version of character matrix, relabel the leaves to be suitable for PAUP*, and add unedited cell, called `FAKEROOT`.
+To run PAUP*, we need to create a binary version of character matrix, relabel the leaves to be suitable for PAUP*, and add two unedited cells, called `UNEDITED1` and `UNEDITED2`.
 ```
 python3 ../../tools/prepare_for_paup_and_starcdp.py \
     -i 3513_NT_T1_Fam_pruned_character_matrix.csv \
@@ -17,7 +17,7 @@ python3 ../../tools/prepare_for_paup_and_starcdp.py \
 ```
 
 This command produces the following files: 
-* `3513_NT_T1_Fam_pruned_character_matrix.csv-fakeroot` - version of character matrix with fake root
+* `3513_NT_T1_Fam_pruned_character_matrix.csv-unedited` - version of character matrix with fake root
 * `3513_NT_T1_Fam_paup_binary.nex` - binary version of charater matrix
 * `3513_NT_T1_Fam_paup_leaf_map.csv` - leaf label name map
 * `3513_NT_T1_Fam_paup_camsok_hsearch_fast.nex` - commands for running heuristic search with PAUP*
@@ -28,28 +28,33 @@ Second, we download and execute PAUP* with the following commands:
 ```
 if using Linux.
 
+//gettrees file=3513_NT_T1_Fam_paup_all_saved.trees
+
 This command conducts a heuristic search, saving the following files:
-* `3513_NT_T1_Fam_paup_all_saved_trees.trees` - best 500 trees found
-* `3513_NT_T1_Fam_paup_all_score_saved_trees.scores` - scores of best 500 trees found
-* `3513_NT_T1_Fam_paup_high_saved_trees.trees` - high scoring trees found
-* `3513_NT_T1_Fam_paup_high_score_saved_trees.scores` - scores of high scoring trees found
+* `3513_NT_T1_Fam_paup_all_saved.trees` - best 500 trees found
+* `3513_NT_T1_Fam_paup_all_score_saved.scores` - scores of best 500 trees found
 * `3513_NT_T1_Fam_paup_scon_high_score.tree` - strict consensus of high scoring trees found
+* `3513_NT_T1_Fam_paup_one_high_score.tree` - one of the high scoring trees found
 
 However, these trees are not on the same label set as the original character matrix, so we need to relabel them.
 
 ```
 cd ../output
+
 python3 ../../tools/postprocess_from_paup.py \
     -i ../input/3513_NT_T1_Fam_paup_scon_high_score.tree \
     -n ../input/3513_NT_T1_Fam_paup_leaf_map.csv \
     -o rerun_paup_scon_high_score.tree
-```
 
-```
-python3 ../../tools/postprocess_from_paup_for_starcdp.py \
-    -i ../input/3513_NT_T1_Fam_paup_all_saved_trees.trees \
+python3 ../../tools/postprocess_from_paup.py \
+    -i ../input/3513_NT_T1_Fam_paup_one_high_score.tree \
     -n ../input/3513_NT_T1_Fam_paup_leaf_map.csv \
-    -o rerun_paup_all_saved_trees.trees
+    -o rerun_paup_one_high_score.tree
+
+python3 ../../tools/postprocess_from_paup_for_starcdp.py \
+    -i ../input/3513_NT_T1_Fam_paup_all_saved.trees \
+    -n ../input/3513_NT_T1_Fam_paup_leaf_map.csv \
+    -o rerun_paup_all_saved.trees
 ```
 
 Now we can give these rooted trees as constraints to Star-CDP.
@@ -57,7 +62,7 @@ Now we can give these rooted trees as constraints to Star-CDP.
 ../../../src/star-cdp \
     -i ../input/3513_NT_T1_Fam_pruned_character_matrix.csv-fakeroot \
     -m ../input/3513_NT_T1_Fam_priors.csv \
-    -t rerun_paup_all_saved_trees.trees \
+    -t rerun_paup_all_saved.trees \
     -g FAKEROOT \
     -consensus \
     -o rerun_star_cdp
