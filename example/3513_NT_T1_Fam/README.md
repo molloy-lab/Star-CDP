@@ -101,15 +101,15 @@ python3 ../../tools/compare_two_rooted_trees_under_star.py \
     -m ../input/3513_NT_T1_Fam_pruned_character_matrix.csv 
 ```
 which returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` for our analyses run on Linux.
-* 86 = the numbers indicate number of leaves/cells
-* 13 = number of internal branches in t1
-* 15 = number of internal branches in t2
-* 8 = number of internal branches in t1 that are missing from t2
-* 10 = number of internal branches in t2 that are missing from t1
-* 5 = number of shared branches
-* 0.615385 = 8 / 13
-* 0.666667 = 10 / 15
-* 0.333333 = 5 / 15
+* `86` = the numbers indicate number of leaves/cells
+* `13` = number of internal branches in t1
+* `15` = number of internal branches in t2
+* `8` = number of internal branches in t1 that are missing from t2
+* `10` = number of internal branches in t2 that are missing from t1
+* `5` = number of shared branches
+* `0.615385` = 8 / 13
+* `0.666667` = 10 / 15
+* `0.333333` = 5 / 15
 
 Importantly, this comparison assumes the input trees are rooted properly when identify branches with mutations.
 We also included `-ex` flags, it will save the trees with mutationless branches contracted for later use. 
