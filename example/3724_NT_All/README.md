@@ -124,4 +124,19 @@ python3 ../../tools/compare_two_rooted_trees_under_star.py \
 ```
 which returns `1207,276,259,17,0,259,0.061594,0.000000,1.000000` for our analyses run on Linux.
 
+We can also compare to the tree distributed with KPTracer (estimated with a special version of Cassiopeia), 
+```
+ python3 ../../tools/compare_two_rooted_trees_under_star.py \
+     -t1 rerun_star_cdp_strict_consensus.tre-nofakeroot \
+     -t2 ../download/3724_NT_All_tree.nwk  \
+     -c1 1 -c2 1 -ex2 \
+     -m ../input/3724_NT_All_pruned_character_matrix.csv 
+```
+
+Repeating this command for different trees shows us that Star-CDP-SCon is the most similar to KPTracer:
+* Star-CDP-SCon vs. KPTracer `1207,276,283,112,119,164,0.405797,0.420495,0.579505`
+* PAUP-SCon vs. KPTracer -   `1207,259,283,101,125,158,0.389961,0.441696,0.558304`
+* Startle-NNI (Py) vs. KPTracer - `1207,271,283,196,208,75,0.723247,0.734982,0.265018` 
+* Startle-NNI (C++) vs. KPTracer - `1207,235,283,185,233,50,0.787234,0.823322,0.176678`
+
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
