@@ -1,9 +1,13 @@
 Running STAR-CDP
 ----------------
 
-We show how to run Star-CDP using a KPTracer data set from [Yang, Jones, et al. (2022)](https://doi.org/10.1016/j.cell.2022.04.015); also analyzed by [Sashittal, Schmidt, et al. (2023)](https://doi.org/10.1016/j.cels.2023.11.005). We preprocessed the files as described [here](README_dataprep.md).
+We show how to run Star-CDP using a KPTracer data set from [Yang, Jones, et al. (2022)](https://doi.org/10.1016/j.cell.2022.04.015); also analyzed by [Sashittal, Schmidt, et al. (2023)](https://doi.org/10.1016/j.cels.2023.11.005).
 
-Now follow [these instructions](3513_NT_T1_Fam/README.md) for analyzing the 3513_NT_T1_Fam data set because it is the smaller of the two data sets and can be analyzed in a few minutes. Follow [these instructions](3724_NT_All/README.md) for analyzing the 3724_NT_All data set but be warned it can take hours.
+Follow [these instructions](3513_NT_T1_Fam/README.md) for analyzing the 3513_NT_T1_Fam data set. It is the smaller of the two data sets and can be analyzed in a few minutes. 
+
+Follow [these instructions](3724_NT_All/README.md) for analyzing the 3724_NT_All data set but be warned it can take a few hours.
+
+The information about downloading and reformatting the KPTracer data is below.
 
 
 Getting KPTracer Data
