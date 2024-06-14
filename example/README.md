@@ -95,7 +95,7 @@ returns `The star homoplasy  score: 315.507`.
 
 For downstream analyses, we recommend using the **strict consensus tree**, stored in this file: `rerun_star_cdp_strict_consensus.tre-nofakeroot`.
 
-For example, we can compare this tree to the Startle-ILP tree after contracting mutationless branches,
+For example, we can compare the Star-CDP-SCon tree to the Startle-ILP tree, *after contracting mutationless branches*, with the command:
 ```
 python3 ../../tools/compare_two_rooted_trees_under_star.py \
     -t1 rerun_star_cdp_strict_consensus.tre-nofakeroot \
@@ -113,10 +113,11 @@ which returns `86,13,15,8,10,5,0.615385,0.666667,0.333333` for our analyses run 
 * 0.615385 = 8 / 13
 * 0.666667 = 10 / 15
 * 0.333333 = 5 / 15
-Importantly, this comparison assumes the input trees are rooted properly.
+
+Importantly, this comparison assumes the input trees are rooted properly when identify branches with mutations.
 We also included `-ex` flags, it will save the trees with mutationless branches contracted for later use. 
 
-We can also compare Star-CDP-SCon to PAUP*-SCon, with the command:
+We can also compare Star-CDP-SCon to PAUP*-SCon, *after contracting mutationless branches*, with the command:
 ```
 python3 ../../tools/compare_two_rooted_trees_under_star.py \
     -t1 rerun_star_cdp_strict_consensus.tre-nofakeroot \
