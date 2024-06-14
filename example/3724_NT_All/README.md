@@ -29,25 +29,28 @@ Second, we download and execute PAUP* with the following commands:
 if using Linux. **This can take hours; use our saved files**
 
 This command conducts a heuristic search, saving the following files:
-* `3724_NT_All_paup_all_saved_trees.trees` - best 500 trees found
-* `3724_NT_All_paup_all_score_saved_trees.scores` - scores of best 500 trees found
-* `3724_NT_All_paup_high_saved_trees.trees` - high scoring trees found
-* `3724_NT_All_paup_high_score_saved_trees.scores` - scores of high scoring trees found
+* `3724_NT_All_paup_all_saved.trees` - best 500 trees found
+* `3724_NT_All_paup_all_score_saved.scores` - scores of best 500 trees found
 * `3724_NT_All_paup_scon_high_score.tree` - strict consensus of high scoring trees found
+* `3724_NT_All_paup_one_high_score.tree` - one of the high scoring trees found
 
 However, these trees are not on the same label set as the original character matrix, so we need to relabel them.
 
 ```
 cd ../output
+
 python3 ../../tools/postprocess_from_paup.py \
     -i ../input/3724_NT_All_paup_scon_high_score.tree \
     -n ../input/3724_NT_All_paup_leaf_map.csv \
     -o rerun_paup_scon_high_score.tree
-```
 
-```
+python3 ../../tools/postprocess_from_paup.py \
+    -i ../input/3724_NT_All_paup_one_high_score.tree \
+    -n ../input/3724_NT_All_paup_leaf_map.csv \
+    -o rerun_paup_one_high_score.tree
+
 python3 ../../tools/postprocess_from_paup_for_starcdp.py \
-    -i ../input/3724_NT_All_paup_all_saved_trees.trees \
+    -i ../input/3724_NT_All_paup_all_saved.trees \
     -n ../input/3724_NT_All_paup_leaf_map.csv \
     -o rerun_paup_all_saved_trees.trees
 ```
@@ -57,7 +60,7 @@ Now we can give these rooted trees as constraints to Star-CDP.
 ../../../src/star-cdp \
     -i ../input/3724_NT_All_pruned_character_matrix.csv-fakeroot \
     -m ../input/3724_NT_All_priors.csv \
-    -t rerun_paup_all_saved_trees.trees \
+    -t rerun_paup_all_saved.trees \
     -g FAKEROOT \
     -consensus \
     -o rerun_star_cdp
