@@ -8,7 +8,7 @@ def main(args):
                 "_strict_consensus.tre"]
     for suffix in  suffixes:
         with open(args.input + suffix, 'r') as inf, \
-             open(args.output + "_" + args.input + suffix, 'w') as outf:
+             open(args.input + suffix + "-" + args.output, 'w') as outf:
             for line in inf:
                 tre = treeswift.read_tree_newick(line)
                 tre = tre.extract_tree_without(["FAKEROOT"])
@@ -22,6 +22,6 @@ if __name__ == '__main__':
                         help="Input Star-CDP prefix")
 
     parser.add_argument("-o", "--output", type=str, default=None, required=True,
-                        help="Output prefix")
+                        help="Output suffix")
 
     main(parser.parse_args())
