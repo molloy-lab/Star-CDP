@@ -26,10 +26,9 @@ This command produces the following files:
 
 Second, we download and execute PAUP* with the following commands:
 ```
-gunzip paup4a168_osx    # change for linux
-chmod a+x paup4a168_osx # change for linux
-./paup4a168_osx -n 3513_NT_T1_Fam_paup_camsok_hsearch_fast.nex
+./paup4a168_centos64 -n 3513_NT_T1_Fam_paup_camsok_hsearch_fast.nex
 ```
+if using Linux.
 
 This command conducts a heuristic search, saving the following files:
 * `3513_NT_T1_Fam_paup_all_saved_trees.trees` - best 500 trees found
