@@ -142,4 +142,6 @@ Repeating this command for different trees shows us that Star-CDP-SCon is the mo
 * Startle-NNI (Py) vs. KPTracer - `1207,271,283,196,208,75,0.723247,0.734982,0.265018` 
 * Startle-NNI (C++) vs. KPTracer - `1207,235,283,185,233,50,0.787234,0.823322,0.176678`
 
+**IMPORTANT** Note that PAUP* requires integer weights so we truncate at the second decimal place and multiple by 100. This means there can be differences in scoring and consensus by PAUP* and methods that use higher precision.
+
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
