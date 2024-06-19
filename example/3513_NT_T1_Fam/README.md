@@ -129,4 +129,6 @@ python3 ../../tools/compare_two_rooted_trees_under_star.py \
 ```
 which returns `86,13,9,4,0,9,0.307692,0.000000,1.000000` for our analyses run on Linux.
 
+**IMPORTANT** Note that PAUP* requires integer weights so we truncate at the second decimal place and multiple by 100. This means there can be differences in scoring and consensus by PAUP* and methods that use higher precision.
+
 A copy of the PAUP* user manual is available [here](https://phylosolutions.com/paup-documentation/paupmanual.pdf); also see [https://rothlab.ucdavis.edu/genhelp/paupsearch.html](https://rothlab.ucdavis.edu/genhelp/paupsearch.html).
