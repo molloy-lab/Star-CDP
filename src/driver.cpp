@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
     std::vector<std::string> states;
 
     read_characters_matrix(filename1, n, m, label2index, labels,
-    index2_leaf_labeling, charbytaxa);
+    index2_leaf_labeling, charbytaxa, outgroup_set);
     
     std::cout << "Finish reading characters matrix" << std::endl; 
     std::vector<std::unordered_map<int,long double>> mut_char_by_state(m);

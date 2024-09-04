@@ -62,8 +62,10 @@ std::vector<std::string> split(std::string str, std::string delimiter) {
 void read_characters_matrix(const std::string& filename, unsigned int &n, unsigned int &m, 
 boost::unordered_map<std::string, unsigned int> &label2index,
 std::vector<std::string> &labels, std::vector<std::vector<int>>
-&index2_leaf_labeling, std::vector<std::vector<int>> &charbytaxa) {
-    std::ifstream file;
+&index2_leaf_labeling, std::vector<std::vector<int>> &charbytaxa, 
+std::unordered_set<std::string>outgroup_set) {
+    
+	std::ifstream file;
 	
     file.open(filename);
     
@@ -86,6 +88,10 @@ std::vector<std::string> &labels, std::vector<std::vector<int>>
             label2index[taxa] = cur_num - 1;
             labels.push_back(taxa);
             
+			if (outgroup_set.find(taxa) != outgroup_set.end()) {
+				outgroup_set.erase(taxa);
+			}
+
 			row.erase(row.begin());
 			
 			std::vector<int> states;
@@ -103,15 +109,28 @@ std::vector<std::string> &labels, std::vector<std::vector<int>>
         }
         cur_num++;
     }
+   
+   std::vector<int> unedited_states(m, 0);
+   
+   for (auto& outg : outgroup_set) {
+	label2index[outg] = cur_num - 1;
+	cur_num++;
+	labels.push_back(outg);
+	index2_leaf_labeling.push_back(unedited_states);
+   }
+   
    n = index2_leaf_labeling.size();
    charbytaxa.resize(m);
+   
    for (int i = 0; i < m; i++) {
+   
        charbytaxa[i].resize(n);
         for (int j = 0; j < n; j++) {
             charbytaxa[i][j] = index2_leaf_labeling[j][i];
             
         }
    }
+   
 }
 
 unsigned int read_mutation_prob(const std::string& filename,
