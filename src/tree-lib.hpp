@@ -853,6 +853,7 @@ void Tree::_copy_tree_helper(Node* curr_old, Node* curr_new) {
         c_new->update_parent(curr_new);
         curr_new->add_child(c_new);
         c_new->label = chld->label;
+        c_new->fre = chld->fre;
         _copy_tree_helper(chld,c_new);
     }    
 }
@@ -861,6 +862,7 @@ Tree* Tree::copy_tree() {
     Tree *out = new Tree();
     Node* curr_old = this->root;
     Node* curr_new = out->root;
+    curr_new->fre = curr_old->fre;
     _copy_tree_helper(curr_old,curr_new);
     return out;
    

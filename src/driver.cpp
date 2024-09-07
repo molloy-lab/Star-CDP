@@ -70,6 +70,8 @@ const std::string help =
 "[(-nosupp)]\n"
 "        Turn off the calculation of clade support, which is the fraction of optimal\n"
 "        solutions clade appears in\n"
+"[(-XOUTG)]\n"
+"        Output trees induced with only ingroup taxa\n"
 "[(-consensus)]\n"
 "        Compute greedy, majority, and strict consensus based on clade support\n"
 "[(-e|--equal)]\n"
@@ -117,6 +119,7 @@ int main(int argc, char** argv) {
 	bool contract_mode = false;
     bool consensus = false;
 	string memory = "-Xmx16000M";
+    bool no_outgroup = false;
 
     for (int i = 0; i < argc; i++) {
     string opt(argv[i]);
@@ -134,6 +137,7 @@ int main(int argc, char** argv) {
 	if (opt == "-j") {guided_tree_filename = argv[++ i];}
 	if (opt == "-contract" && i < argc - 1) {contract_mode = true; input_tree = argv[++ i]; large_star = false;}
 	if (opt == "-memory" && i < argc - 1) {memory = "-Xmx" + std::string(argv[++ i]);}
+    if (opt == "-XOUTG") no_outgroup = true;
 	}
 	
 	if (argc < 3) {
@@ -179,6 +183,7 @@ int main(int argc, char** argv) {
     boost::unordered_map<std::string, unsigned int> label2index;
 
     std::vector<std::string> labels;
+    std::unordered_set<std::string> ingroup;
 
     std::vector<std::vector<int>> index2_leaf_labeling;
 
@@ -192,6 +197,12 @@ int main(int argc, char** argv) {
     std::cout << "Finish reading characters matrix" << std::endl; 
     std::vector<std::unordered_map<int,long double>> mut_char_by_state(m);
     
+    for (const auto& taxa : labels) {
+        if (outgroup_set.find(taxa) == outgroup_set.end()) {
+            ingroup.insert(taxa);
+        } 
+    }
+
 	//std::cout << "m: " << m << std::endl;
     //std::cout << "n: " << n << std::endl;
     
@@ -280,6 +291,12 @@ int main(int argc, char** argv) {
     std::cout << "The number of optimal solutions: " << num_opt << std::endl;
     Tree one_sol = one_solution(I,labels, fre); 
 
+    if (no_outgroup) {
+        one_sol = *one_sol.get_induced_subtree_copy(ingroup);
+        cout << "NO OUT GROUP!!!" << std::endl;
+
+    }
+
     auto duration_of_characters =  std::chrono::duration_cast<std::chrono::milliseconds>(read_characters_end - start);
   std::cout << "execution time of reading characters matrix: " << duration_of_characters.count()  << "ms" << std::endl;
   auto duration_of_search_space =  std::chrono::duration_cast<std::chrono::milliseconds>(search_space_end - read_characters_end);
@@ -319,6 +336,9 @@ int main(int argc, char** argv) {
 	if (consensus) {
             Tree strict = strict_consensus(fre, Sigma, labels);
 
+        if (no_outgroup) {
+            strict = *strict.get_induced_subtree_copy(ingroup);
+        }
         cout << "The strict consensus tree: " << endl;
     
         if (nosupp) {
@@ -336,6 +356,10 @@ int main(int argc, char** argv) {
         }
 
         Tree majority = majority_consensus(fre, Sigma, labels);
+        
+        if (no_outgroup) {
+            majority = *majority.get_induced_subtree_copy(ingroup);
+        }
 
         cout << "The majority consensus tree: " << endl;
         if (nosupp) {
@@ -352,6 +376,10 @@ int main(int argc, char** argv) {
                 }
         }
         Tree greedy = greedy_consensus(fre, Sigma, labels, label2index);
+
+        if (no_outgroup) {
+            greedy = *greedy.get_induced_subtree_copy(ingroup);
+        }
 
         cout << "The greedy consensus tree: " << endl;
         if (nosupp) {
