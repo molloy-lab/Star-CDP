@@ -42,6 +42,7 @@ SOFTWARE.
 #include <cstdint>
 #include <cctype>
 #include<boost/multiprecision/cpp_int.hpp>
+
 // Allows user to set at compile time
 // Use compile flags -DUSE_SHRT or -DUSE_LONG
 #ifdef USE_SHRT

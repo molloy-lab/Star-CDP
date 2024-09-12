@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
-
+#ifndef UTILITY
+#define UTILITY
 #include "bipartition.hpp"
 #include<string>
 #include<vector>
@@ -35,6 +36,7 @@ SOFTWARE.
 #include<unordered_set>
 #include<cmath>
 #include<unordered_map>
+#endif
 
 long double weight_function(std::vector<std::unordered_map<int,long double>> &mut_char_by_state, int char_id, int state, bool equal_weight) {
 	if (equal_weight) {

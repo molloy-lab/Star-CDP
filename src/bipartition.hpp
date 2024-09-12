@@ -23,10 +23,11 @@ SOFTWARE.
 
 */
 
-
+#ifndef BIPARTITION
+#define BIPARTITION
 #include <boost/dynamic_bitset.hpp>
 
-
+#endif
 
 class Bipartition {
 

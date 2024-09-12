@@ -221,7 +221,8 @@ long double dp(Clades_Set &Sigma, std::vector<std::vector<int>> charbytaxa,
 DP_Table &f, SIESTA &I, Clade &S, std::vector<std::unordered_map<int,long double>>
 &mut_char_by_state, std::vector<std::vector<int>> &index2_leaf_labeling,
 std::vector<std::string> &labels, boost::unordered_map<std::string, unsigned
-int> &label2index, bool equal_weight) {
+int> &label2index, bool equal_weight, 
+std::unordered_map<Clade, std::vector<int>> &clade2state) {
     auto start = std::chrono::high_resolution_clock::now();
     
     unsigned int m = charbytaxa.size();
@@ -239,8 +240,9 @@ int> &label2index, bool equal_weight) {
 
   unsigned int subp_num = 1;
   
-  std::unordered_map<Clade, std::vector<int>> clade2state; 
-  
+//   std::unordered_map<Clade, std::vector<int>> clade2state; 
+  std::unordered_map<Clade, int>edges_num;
+
   for (auto &u : Sigma_vec) {
 
     I[u] = std::vector<CladePair>();
@@ -248,6 +250,7 @@ int> &label2index, bool equal_weight) {
 
     if (u.count() == 1) {
         f[u] = 0.0;
+        // edges_num[u] = 0;
         
         //std::string u_str = u.to_string();
         
@@ -266,10 +269,13 @@ int> &label2index, bool equal_weight) {
         Clades_Set memo;
         memo.clear();
         clade2state[u] = get_state(u, n, m, charbytaxa);   
-       
+    //    int best_edges_num = 0;
        long double tmp = INF;
+    // long double tmp = 0;
         
         for (auto &a : Sigma_vec) {
+
+
             
             if (a.count() >= u.count()) {
                 break;
@@ -295,10 +301,21 @@ int> &label2index, bool equal_weight) {
                     long double v = f[a] + f[a_comp] + score(clade2state[u],
                     clade2state[a], clade2state[a_comp], mut_char_by_state, m, equal_weight);
                     
-                    if (tmp > v) {
+                    // int cur_edges_num = edges_num[a] + edges_num[a_comp];
+                    
+                    // if (clade2state[u] != clade2state[a]) {
+                    //     cur_edges_num += 1;
+                    // }
+
+                    // if (clade2state[u] != clade2state[a_comp]) {
+                    //     cur_edges_num += 1;
+                    // }
+
+
+                    if (tmp > v ) {
                         I[u].clear();
                         tmp = v;
-
+                        // best_edges_num = cur_edges_num;
                         I[u].push_back(std::make_pair(a, a_comp));
                         
                     } else if (tmp == v) {
@@ -312,7 +329,9 @@ int> &label2index, bool equal_weight) {
         }
 
         f[u] = tmp;
+        // edges_num[u] = best_edges_num;
 
+        // std::cout << "Clade size: " << u.count() << " edges # " << best_edges_num << std::endl;
         if (subp_num % 1000 == 0) std::cout << std::setw(12) << subp_num <<
             "subsubproblems computed." << std::endl;
             std::cout << "\rComputing subsubproblem:" << std::setw(12) << subp_num++;
@@ -332,7 +351,7 @@ std::tuple<long double,SIESTA> cclshp(Clades_Set &Sigma,
 std::vector<std::vector<int>> charbytaxa, std::vector<std::unordered_map<int,long double>>
 &mut_char_by_state, std::vector<std::vector<int>> &index2_leaf_labeling,
 std::vector<std::string> &labels, boost::unordered_map<std::string, unsigned
-int> &label2index, bool equal_weight) {
+int> &label2index, bool equal_weight, std::unordered_map<Clade, std::vector<int>> &clade2state) {
     DP_Table f;
     SIESTA I;
     /* compute full set */
@@ -343,7 +362,7 @@ int> &label2index, bool equal_weight) {
 
     Bipartition S(tbs);
 
-    long double star_score = dp(Sigma, charbytaxa, f, I, S, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight);
+    long double star_score = dp(Sigma, charbytaxa, f, I, S, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight, clade2state);
     
     return std::tuple<long double, SIESTA>{star_score, I};
 }

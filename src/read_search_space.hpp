@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
-
+#ifndef READ_SEARCH_SPACE
+#define READ_SEARCH_SPACE
 #include<fstream>
 #include<cstdio>
 #include<iostream>
@@ -38,6 +39,7 @@ SOFTWARE.
 #include<unordered_set>
 #include<boost/algorithm/string.hpp>
 
+#endif
 std::string findAstralJar() {
   std::string edir = whereami::executable_dir();
   std::cout << "Executable in " << edir << std::endl;

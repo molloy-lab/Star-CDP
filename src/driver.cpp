@@ -30,9 +30,10 @@ SOFTWARE.
 #include <cstdint>
 #include<cstdlib>
 #include<unistd.h>
-#include "cc_lshp.hpp"
 #include<iostream>
 #include<unordered_set>
+#include "migration.hpp"
+
 using namespace std;
 const std::string help =
 "===================================== Star-CDP =====================================\n"
@@ -105,7 +106,9 @@ int main(int argc, char** argv) {
     string filename2 = ""; // mutation probablity
     string filename3 = ""; // output file
     string filename4 = ""; // user defined search space
+    string mig_file = ""; // anatomitical sites labels
     string input_tree = "";
+
     string outname;
 	string guided_tree_filename = "";
     bool large_star = true;
@@ -120,6 +123,7 @@ int main(int argc, char** argv) {
     bool consensus = false;
 	string memory = "-Xmx16000M";
     bool no_outgroup = false;
+    std::string primary_tumor = "";
 
     for (int i = 0; i < argc; i++) {
     string opt(argv[i]);
@@ -138,6 +142,8 @@ int main(int argc, char** argv) {
 	if (opt == "-contract" && i < argc - 1) {contract_mode = true; input_tree = argv[++ i]; large_star = false;}
 	if (opt == "-memory" && i < argc - 1) {memory = "-Xmx" + std::string(argv[++ i]);}
     if (opt == "-XOUTG") no_outgroup = true;
+    if (opt == "-MIG" && i < argc - 1) {mig_file = argv[++ i];}
+    if (opt == "-p" && i < argc - 1) {primary_tumor = argv[++ i];}
 	}
 	
 	if (argc < 3) {
@@ -191,6 +197,15 @@ int main(int argc, char** argv) {
 
     std::vector<std::string> states;
 
+    std::unordered_map<Clade, std::string> taxon2anatomical;
+
+    std::unordered_set<std::string>anatomical_labels;
+
+    std::unordered_map<Clade, std::vector<int>> clade2state;
+
+    
+
+
     read_characters_matrix(filename1, n, m, label2index, labels,
     index2_leaf_labeling, charbytaxa, outgroup_set);
     
@@ -202,6 +217,22 @@ int main(int argc, char** argv) {
             ingroup.insert(taxa);
         } 
     }
+
+    if (mig_file != "") {
+        std::ifstream anatomical_file_stream(mig_file);
+        // Check if the file opened successfully
+        if (!anatomical_file_stream.is_open()) {
+            std::cerr << "Error opening file!" << std::endl;
+            return 1;
+        } else {
+            std::cout << "Reading anatomical sites" << std::endl;
+            read_anatomical_labes(primary_tumor, outgroup_set,labels, label2index,taxon2anatomical, anatomical_labels, anatomical_file_stream);
+        }
+
+        anatomical_file_stream.close();
+
+    }
+
 
 	//std::cout << "m: " << m << std::endl;
     //std::cout << "n: " << n << std::endl;
@@ -273,7 +304,8 @@ int main(int argc, char** argv) {
     Clades_Set Sigma = read_search_space(filename4, label2index, labels, outgroup, memory);
     
     auto search_space_end = std::chrono::high_resolution_clock::now();
-    std::tuple<long double, SIESTA> sol_pair =  cclshp(Sigma, charbytaxa, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight);
+    std::tuple<long double, SIESTA> sol_pair =  cclshp(Sigma, charbytaxa, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight,
+    clade2state);
 
     SIESTA I = std::get<1>(sol_pair);
 
@@ -309,6 +341,7 @@ int main(int argc, char** argv) {
     std::string strict_name =  filename3 + "_strict_consensus.tre"; 
     std::string majority_name = filename3 + "_majority_consensus.tre";
     std::string greedy_name =  filename3 + "_greedy_consensus.tre";
+    std::string mig_name = filename3 + "_migration.tre";
     std::string num_of_sol_name = filename3 + "_number_of_sol.csv";
     cout << "One optimal solution: " << endl;    
     
@@ -401,10 +434,38 @@ int main(int argc, char** argv) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "execution time: " << duration.count() << "ms" << std::endl;
+
+    if (mig_file != "") {
+        std::pair<int, std::unordered_map<std::pair<Clade, std::string>,  std::pair<std::pair<Clade, Clade>, std::pair<std::string, std::string>>,PairHash, PairEqual>> mig_res = mig_dp(primary_tumor, taxon2anatomical,anatomical_labels,Sigma,S,clade2state,I);
+        
+        Tree mig_tree = binary_mig_solution(mig_res.second,fre, S,primary_tumor, labels);
+
+        if (no_outgroup) {
+            mig_tree = *mig_tree.get_induced_subtree_copy(ingroup);
+
+        }
+
+        cout << " The most parsimonious refinement of migration tree: " << endl;
+
+        if (nosupp) {
+            cout << mig_tree.newick(false, false, false) << endl;
+            if (write2file) {
+                std::ofstream mig_out(mig_name);
+                mig_out << mig_tree.newick(false, false, false) << endl;
+            }
+        } else {
+            cout << mig_tree.newick(false, false, true) << endl;
+
+            if (write2file) {
+                std::ofstream mig_out(mig_name);
+                mig_out << mig_tree.newick(false, false, true) << endl;
+            }
+        }
+
+    }
+
+
     return 0;
-
-
-
 
 }
 

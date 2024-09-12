@@ -22,7 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 */
-
+#ifndef SMALL_STAR_HOMOPLASY
+#define SMALL_STAR_HOMOPLASY
 #include "tree-lib.hpp"
 #include "reader.hpp"
 #include<queue>
@@ -35,6 +36,7 @@ SOFTWARE.
 #include<array>
 #include<unordered_set>
 #include<utility>
+#endif
 // Assume in the input tree file there is only contain one newick string.
 std::string get_newick(std::string input_tree) {
   std::ifstream file(input_tree);
