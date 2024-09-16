@@ -32,7 +32,7 @@ SOFTWARE.
 #include<unistd.h>
 #include<iostream>
 #include<unordered_set>
-#include "migration.hpp"
+#include "heritable.hpp"
 
 using namespace std;
 const std::string help =
@@ -123,6 +123,8 @@ int main(int argc, char** argv) {
     bool consensus = false;
 	string memory = "-Xmx16000M";
     bool no_outgroup = false;
+    bool is_hertiable = false;
+    
     std::string primary_tumor = "";
 
     for (int i = 0; i < argc; i++) {
@@ -144,6 +146,7 @@ int main(int argc, char** argv) {
     if (opt == "-XOUTG") no_outgroup = true;
     if (opt == "-MIG" && i < argc - 1) {mig_file = argv[++ i];}
     if (opt == "-p" && i < argc - 1) {primary_tumor = argv[++ i];}
+    if (opt == "-HERT") {is_hertiable = true;}
 	}
 	
 	if (argc < 3) {
@@ -203,6 +206,7 @@ int main(int argc, char** argv) {
 
     std::unordered_map<Clade, std::vector<int>> clade2state;
 
+    std::unordered_map<Clade, long double> hertiable_cost;
     
 
 
@@ -304,10 +308,28 @@ int main(int argc, char** argv) {
     Clades_Set Sigma = read_search_space(filename4, label2index, labels, outgroup, memory);
     
     auto search_space_end = std::chrono::high_resolution_clock::now();
-    std::tuple<long double, SIESTA> sol_pair =  cclshp(Sigma, charbytaxa, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight,
+
+    SIESTA I;
+    
+
+    if (!is_hertiable) {
+
+        std::tuple<long double, SIESTA> sol_pair =  cclshp(Sigma, charbytaxa, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight,
     clade2state);
 
-    SIESTA I = std::get<1>(sol_pair);
+        I = std::get<1>(sol_pair);
+
+    } else {
+        std::tuple<long double, long double, SIESTA> sol_pair =  cclshp(Sigma, charbytaxa, mut_char_by_state, index2_leaf_labeling, labels, label2index, equal_weight,
+    clade2state, hertiable_cost);
+
+        I = std::get<2>(sol_pair);
+
+       
+    }
+    
+
+    
 
     
     boost::dynamic_bitset<> tbs(labels.size());
