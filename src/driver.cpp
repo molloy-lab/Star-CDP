@@ -121,6 +121,7 @@ int main(int argc, char** argv) {
 	bool greedy_mode = false;
 	bool contract_mode = false;
     bool consensus = false;
+    std::string leaf_map_file = "";
 	string memory = "-Xmx16000M";
     bool no_outgroup = false;
     std::string primary_tumor = "";
@@ -142,6 +143,7 @@ int main(int argc, char** argv) {
 	if (opt == "-contract" && i < argc - 1) {contract_mode = true; input_tree = argv[++ i]; large_star = false;}
 	if (opt == "-memory" && i < argc - 1) {memory = "-Xmx" + std::string(argv[++ i]);}
     if (opt == "-XOUTG") no_outgroup = true;
+    if (opt == "-leafmap" && i < argc - 1) {leaf_map_file = argv[++ i];}
     if (opt == "-MIG" && i < argc - 1) {mig_file = argv[++ i];}
     if (opt == "-p" && i < argc - 1) {primary_tumor = argv[++ i];}
 	}
@@ -201,9 +203,12 @@ int main(int argc, char** argv) {
 
     std::unordered_set<std::string>anatomical_labels;
 
+
     std::unordered_map<Clade, std::vector<int>> clade2state;
 
+    std::unordered_map<std::string,std::vector<std::string>> leaves_eq_map;
     
+    std::unordered_map<std::string, std::string> cell2anatomical;
 
 
     read_characters_matrix(filename1, n, m, label2index, labels,
@@ -222,14 +227,32 @@ int main(int argc, char** argv) {
         std::ifstream anatomical_file_stream(mig_file);
         // Check if the file opened successfully
         if (!anatomical_file_stream.is_open()) {
-            std::cerr << "Error opening file!" << std::endl;
+            std::cerr << "Error opening sites labeling file!" << std::endl;
             return 1;
         } else {
             std::cout << "Reading anatomical sites" << std::endl;
-            read_anatomical_labes(primary_tumor, outgroup_set,labels, label2index,taxon2anatomical, anatomical_labels, anatomical_file_stream);
+            read_anatomical_labels(primary_tumor, outgroup_set,labels, label2index,taxon2anatomical, anatomical_labels, cell2anatomical, anatomical_file_stream);
+
         }
 
         anatomical_file_stream.close();
+
+        if (leaf_map_file != "") {
+            std::ifstream eqifs(leaf_map_file);
+
+            if (!eqifs.is_open()) {
+                std::cerr << "Error opeing leaves map file!" << std::endl;
+            } else {
+                std::cout << "Reading leaves map " << std::endl;
+                load_eqclass(eqifs,leaves_eq_map);
+                std::cout << "leaves_eq_map k#: " << leaves_eq_map.size() << std::endl;
+                // for (const auto& [key, values] : leaves_eq_map) {cout << "Key: " << key << ", Values: ";for (const auto& val : values) {cout << val << " ";}cout << endl;}
+                // std::cout << leaves_eq_map.size() << std::endl;
+            }
+            eqifs.close();
+        }
+
+        
 
     }
 
@@ -299,6 +322,9 @@ int main(int argc, char** argv) {
         if (write_bptrees_and_exit) return 0;
 
     }
+
+
+    
 	
     
     Clades_Set Sigma = read_search_space(filename4, label2index, labels, outgroup, memory);
@@ -436,9 +462,47 @@ int main(int argc, char** argv) {
     std::cout << "execution time: " << duration.count() << "ms" << std::endl;
 
     if (mig_file != "") {
-        std::pair<int, std::unordered_map<std::pair<Clade, std::string>,  std::pair<std::pair<Clade, Clade>, std::pair<std::string, std::string>>,PairHash, PairEqual>> mig_res = mig_dp(primary_tumor, taxon2anatomical,anatomical_labels,Sigma,S,clade2state,I);
+
+        std::vector<std::string> anatomical_labels_vec(anatomical_labels.begin(), anatomical_labels.end());
+
+        // computing leaves weight
+
+        std::unordered_map<Bipartition, std::unordered_map<std::string, double>> taxon_weight_meta;
+        std::unordered_map<Bipartition, std::unordered_map<std::string, double>> taxon_weight_reseeding;
+
+        bool is_weight = leaf_map_file != "";
+
+        // std::cout << " 475 pruned_cell2anatomical size: " << pruned_cell2anatomical.size() << std::endl;
+        if (is_weight) {
+            load_weights_for_leaves(taxon_weight_meta,
+            taxon_weight_reseeding,
+            primary_tumor,
+            labels,
+            anatomical_labels_vec,
+            label2index,
+            leaves_eq_map,
+            cell2anatomical, 
+            taxon2anatomical);
+        } else {
+            load_weights_for_leaves(taxon_weight_meta,taxon_weight_reseeding,labels,anatomical_labels_vec,label2index,taxon2anatomical);
+        }
         
-        Tree mig_tree = binary_mig_solution(mig_res.second,fre, S,primary_tumor, labels);
+
+        // std::cout << "pruned_cell2anatomical size: " << pruned_cell2anatomical.size() << std::endl;
+        // for (const auto& [k,v] : taxon_weight_meta) {
+        //      std::cout << v.at(primary_tumor) << std::endl;
+
+        // }
+
+
+        std::pair<std::pair<double,double>, std::unordered_map<std::pair<Clade, std::string>,  std::pair<std::pair<Clade, Clade>, std::pair<std::string, std::string>>,PairHash, PairEqual>> mig_res = 
+        mig_dp(primary_tumor, taxon2anatomical,anatomical_labels_vec,Sigma,S,clade2state,I, taxon_weight_meta, taxon_weight_reseeding);
+        
+        double final_meta = mig_res.first.first;
+        double final_reseeding = mig_res.first.second;
+        Tree mig_tree = binary_mig_solution(mig_res.second,fre, S,primary_tumor, labels, 
+        taxon_weight_meta,
+        taxon_weight_reseeding);
 
         if (no_outgroup) {
             mig_tree = *mig_tree.get_induced_subtree_copy(ingroup);

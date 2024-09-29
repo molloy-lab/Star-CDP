@@ -30,12 +30,14 @@ SOFTWARE.
 #include<vector>
 #include<string>
 #include<boost/unordered_map.hpp>
+#include "json.hpp"
 #include<cstdint>
 #include<cstring>
 #include<limits>
 #endif
 
-const long double INF = std::numeric_limits<long double>::infinity();
+const double INF = std::numeric_limits<double>::infinity();
+// int INT_INF = std::numeric_limits<int>::max();
 
 // https://www.geeksforgeeks.org/cpp-string-to-vector-using-delimiter/
 std::vector<std::string> split(std::string str, std::string delimiter) {
@@ -215,33 +217,156 @@ std::unordered_set<Bipartition> get_binary_clades(unsigned int n, unsigned int m
 }
 
 
-void read_anatomical_labes(
+void read_anatomical_labels(
 	std::string &primary_tumor,
 	std::unordered_set<std::string> &outgroup_set,
 	std::vector<std::string> &labels,
-	boost::unordered_map<std::string, unsigned int> label2index,
+	boost::unordered_map<std::string, unsigned int> &label2index,
 	std::unordered_map<Bipartition, std::string> &taxon2anatomical, 
 	std::unordered_set<std::string> &anatomical_labels,
+	std::unordered_map<std::string, std::string> &cell2anatomical,
 	std::ifstream &labels_file) {
 	std::string line;
     // Read the file line by line
+	int unpruned_cells_num = 0;
+	int pruned_cells_num = 0;
     while (std::getline(labels_file, line)) {
         std::istringstream iss(line);
         std::string cellId, anatomicalLabel;
 
         // Split the line into cellId and anatomicalLabel
         if (iss >> cellId >> anatomicalLabel) {
-			boost::dynamic_bitset<> bs(labels.size());
-			bs.set(label2index[cellId]);
-            taxon2anatomical[Bipartition(bs)] = anatomicalLabel;
-			anatomical_labels.insert(anatomicalLabel);
+			
+			// std::cout << cellId << std::endl;
+			cell2anatomical[cellId] = anatomicalLabel;
+			// curr cell is not be pruned/deduplicated
+			if (label2index.find(cellId) != label2index.end()) {
+				// std::cout << cellId << " is not pruned! " << std::endl;
+				unpruned_cells_num++;
+				boost::dynamic_bitset<> bs(labels.size());
+				bs.set(label2index[cellId]);
+            	taxon2anatomical[Bipartition(bs)] = anatomicalLabel;
+				anatomical_labels.insert(anatomicalLabel);
+			} else {
+				pruned_cells_num++;
+				// std:: cout << cellId << "is pruned " << std::endl;
+				
+			}
+			
         }
     }
 
+	std::cout << "non-pruned cell: " << unpruned_cells_num << std::endl;
+	std::cout << "pruned cell: " << pruned_cells_num << std::endl;
+	std::cout << "cell2anatomical size: " << cell2anatomical.size() << std::endl;
 	for (auto &outg : outgroup_set) {
 		boost::dynamic_bitset<> bs(labels.size());
 		bs.set(label2index[outg]);
 		taxon2anatomical[Bipartition(bs)] = primary_tumor;
 		anatomical_labels.insert(primary_tumor);
+		cell2anatomical[outg] = primary_tumor;
 	}
+	
+}
+
+void load_eqclass(std::ifstream &eqclass_fs, std::unordered_map<std::string,
+std::vector<std::string>> &leaves_eq_map) {
+	nlohmann::json eqclass_json;
+	eqclass_fs >> eqclass_json;
+	for (auto& [k, v] : eqclass_json.items()) {
+		std::vector<std::string> dup_cells = v.get<std::vector<std::string>>();
+		leaves_eq_map[k] = dup_cells;
+
+		// for (auto& cell : dup_cells) {
+		// 	std::cout << cell <<"@";
+		// }
+		// std::cout << std::endl;
+	} 
+}
+
+
+void load_weights_for_leaves(std::unordered_map<Bipartition, std::unordered_map<std::string, double>> &taxon_weight_meta,
+std::unordered_map<Bipartition, std::unordered_map<std::string, double>> &taxon_weight_reseeding,
+std::string &primary_tumor,
+std::vector<std::string> &labels,
+std::vector<std::string> &anatomical_labels_vec,
+boost::unordered_map<std::string, unsigned int> &label2index,
+std::unordered_map<std::string,std::vector<std::string>> &leaves_eq_map,
+std::unordered_map<std::string, std::string> &pruned_cell2anatomical,
+std::unordered_map<Bipartition, std::string> &taxon2anatomical) {
+	for (const auto& [leaf, pruned_cells] : leaves_eq_map) {
+		
+		boost::dynamic_bitset<> bs(labels.size());
+		bs.set(label2index[leaf]);
+		Bipartition leaf_clade(bs);
+
+		// if (taxon_weight_meta.find(leaf_clade) == taxon_weight_meta.end()) {
+		// 	taxon_weight_meta[leaf_clade] = std::unordered_map<std::string, int>();
+		// }
+
+		// if (taxon_weight_reseeding.find(leaf_clade) == taxon_weight_reseeding.end()) {
+		// 	taxon_weight_reseeding[leaf_clade] = std::unordered_map<std::string, int>();
+		// }
+
+		for (const auto& leaf_label : anatomical_labels_vec) {
+			
+			taxon_weight_reseeding[leaf_clade][leaf_label] = 0;
+			taxon_weight_meta[leaf_clade][leaf_label] = 0;
+
+			for (const auto& pruned_cell : pruned_cells) {
+				if (pruned_cell2anatomical.find(pruned_cell) == pruned_cell2anatomical.end()) {
+					std::cerr << "Failed to retrive cell site label at "  << pruned_cell << std::endl;
+					}
+				
+				if (leaf_label != pruned_cell2anatomical[pruned_cell]) {
+					if (pruned_cell2anatomical[pruned_cell] == primary_tumor) {
+						taxon_weight_reseeding[leaf_clade][leaf_label] += 1;
+					} else {
+						taxon_weight_meta[leaf_clade][leaf_label] += 1;
+					}
+				}
+			}
+		}
+	} 
+}
+
+
+
+
+
+
+
+// if (leaf_label != taxon2anatomical[leaf_clade]) {
+// 					taxon_weight_meta[leaf_clade][leaf_label] = INF;
+// 					taxon_weight_reseeding[leaf_clade][leaf_label] = INF;
+					
+				
+				
+// 			}
+
+
+void load_weights_for_leaves(std::unordered_map<Bipartition, std::unordered_map<std::string, double>> &taxon_weight_meta,
+std::unordered_map<Bipartition, std::unordered_map<std::string, double>> &taxon_weight_reseeding,
+std::vector<std::string> &labels,
+std::vector<std::string> &anatomical_labels_vec,
+boost::unordered_map<std::string, unsigned int> &label2index,
+std::unordered_map<Bipartition, std::string> &taxon2anatomical) {
+
+	for (auto &cell: labels) {
+
+		boost::dynamic_bitset<> bs(labels.size());
+		bs.set(label2index[cell]);
+		Bipartition leaf_clade(bs);
+
+		for (auto &site_lab: anatomical_labels_vec) {
+			if (site_lab == taxon2anatomical[leaf_clade]) {
+				taxon_weight_meta[leaf_clade][site_lab] = 0;
+				taxon_weight_reseeding[leaf_clade][site_lab] = 0;
+			} else {
+				taxon_weight_meta[leaf_clade][site_lab] = INF;
+				taxon_weight_reseeding[leaf_clade][site_lab] = INF;
+			}
+		}
+	}
+
 }

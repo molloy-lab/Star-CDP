@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -std=c++14 -O3 -funroll-loops -fomit-frame-pointer 
+CFLAGS= -std=c++17 -O3 -funroll-loops -fomit-frame-pointer 
 
 #TARGET = star-cdp
 #SRC = $(#wildcard *.cpp)

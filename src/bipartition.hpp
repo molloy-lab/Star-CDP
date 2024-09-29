@@ -26,7 +26,7 @@ SOFTWARE.
 #ifndef BIPARTITION
 #define BIPARTITION
 #include <boost/dynamic_bitset.hpp>
-
+#include<map>
 #endif
 
 class Bipartition {
