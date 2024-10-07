@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 	string memory = "-Xmx16000M";
     bool no_outgroup = false;
     std::string primary_tumor = "";
-
+    int num_sols = 0;
     for (int i = 0; i < argc; i++) {
     string opt(argv[i]);
     if (opt == "-h" || opt == "--help") {std::cout << help; return 0;}
@@ -146,6 +146,7 @@ int main(int argc, char** argv) {
     if (opt == "-leafmap" && i < argc - 1) {leaf_map_file = argv[++ i];}
     if (opt == "-MIG" && i < argc - 1) {mig_file = argv[++ i];}
     if (opt == "-p" && i < argc - 1) {primary_tumor = argv[++ i];}
+    if (opt == "-trees" && i < argc - 1) {num_sols = std::stoi(argv[++ i]);}
 	}
 	
 	if (argc < 3) {

@@ -53,7 +53,7 @@ typedef std::unordered_map<Clade, long double> DP_Table;
 //const long double INF = std::numeric_limits<long double>::infinity();
 
 using namespace boost::multiprecision;
-
+std::mt19937 generator(12345);
 
 // may or may not need in the future
 struct PairHash {
@@ -367,9 +367,10 @@ int> &label2index, bool equal_weight, std::unordered_map<Clade, std::vector<int>
     return std::tuple<long double, SIESTA>{star_score, I};
 }
 
-Tree one_solution(SIESTA &I, std::vector<std::string> &labels,
+inline Tree one_solution(SIESTA &I, std::vector<std::string> &labels,
 std::unordered_map<Clade, cpp_rational> &freq) {
     
+
     boost::dynamic_bitset<> tbs(labels.size());
     
     std::vector<Clade> clades;
@@ -388,19 +389,32 @@ std::unordered_map<Clade, cpp_rational> &freq) {
         Clade t = que.front();
         que.pop();
         clades.push_back(t);
+        
         if (I[t].size() > 0) {
-            Clade x = I[t][0].first;
-            Clade y = I[t][0].second;
+            std::uniform_int_distribution<int> distribution(0, I[t].size() - 1);
+            int clade_picked_index = distribution(generator);
+            Clade x = I[t][clade_picked_index].first;
+            Clade y = I[t][clade_picked_index].second;
         
             que.push(x);
             que.push(y);
         }
     }
     
-    std::cout << "Compute all clades in one sol "<< std::endl;
     return build_tree_from_compat_clades(clades, labels, freq, true);
 
 }
+
+
+std::vector<Tree> mutiple_random_trees(SIESTA &I, std::vector<std::string> &labels, std::unordered_map<Clade, cpp_rational> &freq, int x) {
+    std::vector<Tree> random_sol_trees;
+    for (int i = 0; i < x; i++) {
+        random_sol_trees.push_back(one_solution(I,labels,freq));
+    }
+    return random_sol_trees;
+}
+
+
 
 std::unordered_map<Clade, cpp_rational> compute_below(SIESTA &I, Clades_Set
 &Sigma,std::vector<std::string> &labels) {
