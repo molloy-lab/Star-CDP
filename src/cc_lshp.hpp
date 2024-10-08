@@ -53,7 +53,9 @@ typedef std::unordered_map<Clade, long double> DP_Table;
 //const long double INF = std::numeric_limits<long double>::infinity();
 
 using namespace boost::multiprecision;
-std::mt19937 generator(12345);
+
+unsigned int base_seed = 12345;
+
 
 // may or may not need in the future
 struct PairHash {
@@ -384,7 +386,7 @@ std::unordered_map<Clade, cpp_rational> &freq) {
     std::queue<Clade> que;
 
     que.push(S);
-    
+    int i = 0;
     while (!que.empty()) {
         Clade t = que.front();
         que.pop();
@@ -392,7 +394,12 @@ std::unordered_map<Clade, cpp_rational> &freq) {
         
         if (I[t].size() > 0) {
             std::uniform_int_distribution<int> distribution(0, I[t].size() - 1);
-            int clade_picked_index = distribution(generator);
+            
+            std::seed_seq seed{base_seed + static_cast<unsigned int>(i++)};
+            std::mt19937 rng(seed);
+
+            int clade_picked_index = distribution(rng);
+
             Clade x = I[t][clade_picked_index].first;
             Clade y = I[t][clade_picked_index].second;
         

@@ -370,6 +370,7 @@ int main(int argc, char** argv) {
     std::string greedy_name =  filename3 + "_greedy_consensus.tre";
     std::string mig_name = filename3 + "_migration.tre";
     std::string num_of_sol_name = filename3 + "_number_of_sol.csv";
+    std::string mutiple_trees_name = filename3 + + "_multiple_sols.tre";
     cout << "One optimal solution: " << endl;    
     
     if (write2file) {
@@ -377,6 +378,20 @@ int main(int argc, char** argv) {
         num_opt_out << num_opt << endl;
     }
     
+    if (num_sols > 0) {
+        std::vector<Tree> random_solutions = mutiple_random_trees(I, labels, fre, num_sols);
+        
+        if (write2file) {
+            std::ofstream res_trees_out(mutiple_trees_name);
+            for (auto t : random_solutions) {
+                if (nosupp) {
+                    res_trees_out << t.newick(false, false, false) << endl;
+                } else {
+                    res_trees_out << t.newick(false, false, true) << endl;
+                }
+            }
+        }
+    }
 
 
     if (nosupp) {
@@ -385,6 +400,7 @@ int main(int argc, char** argv) {
             std::ofstream one_sol_out(one_sol_name);
             one_sol_out << one_sol.newick(false, false, false) << endl;
             }
+
     } else {
         cout << one_sol.newick(false, false, true) << endl;
         if (write2file) {
