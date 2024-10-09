@@ -349,6 +349,9 @@ std::unordered_map<Clade, std::vector<int>> &clade2state) {
      return f[S];
 }
 
+
+
+
 std::tuple<long double,SIESTA> cclshp(Clades_Set &Sigma,
 std::vector<std::vector<int>> charbytaxa, std::vector<std::unordered_map<int,long double>>
 &mut_char_by_state, std::vector<std::vector<int>> &index2_leaf_labeling,
@@ -369,7 +372,9 @@ int> &label2index, bool equal_weight, std::unordered_map<Clade, std::vector<int>
     return std::tuple<long double, SIESTA>{star_score, I};
 }
 
-inline Tree one_solution(SIESTA &I, std::vector<std::string> &labels,
+
+
+Tree one_solution(SIESTA &I, std::vector<std::string> &labels,
 std::unordered_map<Clade, cpp_rational> &freq) {
     
 
@@ -395,7 +400,52 @@ std::unordered_map<Clade, cpp_rational> &freq) {
         if (I[t].size() > 0) {
             std::uniform_int_distribution<int> distribution(0, I[t].size() - 1);
             
-            std::seed_seq seed{base_seed + static_cast<unsigned int>(i++)};
+            std::mt19937 rng(base_seed);
+
+            int clade_picked_index = distribution(rng);
+
+            Clade x = I[t][clade_picked_index].first;
+            Clade y = I[t][clade_picked_index].second;
+        
+            que.push(x);
+            que.push(y);
+        }
+    }
+    
+    return build_tree_from_compat_clades(clades, labels, freq, true);
+
+}
+
+
+
+
+
+Tree one_solution(SIESTA &I, std::vector<std::string> &labels,
+std::unordered_map<Clade, cpp_rational> &freq, unsigned int seed) {
+    
+
+    boost::dynamic_bitset<> tbs(labels.size());
+    
+    std::vector<Clade> clades;
+    
+    tbs.flip();
+
+    Clade S(tbs);
+    
+    clades.push_back(S);
+    
+    std::queue<Clade> que;
+
+    que.push(S);
+    int i = 0;
+    while (!que.empty()) {
+        Clade t = que.front();
+        que.pop();
+        clades.push_back(t);
+        
+        if (I[t].size() > 0) {
+            std::uniform_int_distribution<int> distribution(0, I[t].size() - 1);
+            
             std::mt19937 rng(seed);
 
             int clade_picked_index = distribution(rng);
@@ -416,7 +466,7 @@ std::unordered_map<Clade, cpp_rational> &freq) {
 std::vector<Tree> mutiple_random_trees(SIESTA &I, std::vector<std::string> &labels, std::unordered_map<Clade, cpp_rational> &freq, int x) {
     std::vector<Tree> random_sol_trees;
     for (int i = 0; i < x; i++) {
-        random_sol_trees.push_back(one_solution(I,labels,freq));
+        random_sol_trees.push_back(one_solution(I,labels,freq, base_seed + i));
     }
     return random_sol_trees;
 }
