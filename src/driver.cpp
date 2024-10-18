@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     if (opt == "-leafmap" && i < argc - 1) {leaf_map_file = argv[++ i];}
     if (opt == "-MIG" && i < argc - 1) {mig_file = argv[++ i];}
     if (opt == "-p" && i < argc - 1) {primary_tumor = argv[++ i];}
-    if (opt == "-trees" && i < argc - 1) {num_sols = std::stoi(argv[++ i]);}
+    if (opt == "-rand" && i < argc - 1) {num_sols = std::stoi(argv[++ i]);}
 	}
 	
 	if (argc < 3) {
@@ -370,7 +370,7 @@ int main(int argc, char** argv) {
     std::string greedy_name =  filename3 + "_greedy_consensus.tre";
     std::string mig_name = filename3 + "_migration.tre";
     std::string num_of_sol_name = filename3 + "_number_of_sol.csv";
-    std::string mutiple_trees_name = filename3 + + "_multiple_sols.tre";
+    std::string mutiple_trees_name = filename3 + + "_random_sol_trees.tre";
     cout << "One optimal solution: " << endl;    
     
     if (write2file) {
