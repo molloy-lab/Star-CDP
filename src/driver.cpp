@@ -149,6 +149,7 @@ int main(int argc, char** argv) {
     if (opt == "-rand" && i < argc - 1) {num_sols = std::stoi(argv[++ i]);}
 	}
 	
+    std::cout << "Generate at most " << num_sols << " random trees" << std::endl;
 	if (argc < 3) {
 			std::cout << "Not enough arguments given!\n\n";
 			std::cout << help;
@@ -379,17 +380,26 @@ int main(int argc, char** argv) {
     }
     
     if (num_sols > 0) {
-        std::vector<Tree> random_solutions = mutiple_random_trees(I, labels, fre, num_sols);
-        
+        // std::vector<Tree> random_solutions = mutiple_random_trees(I, labels, fre, num_sols);
+        Tree one_rand_tree = one_rand_solution(I,labels,fre, 12345);
+
         if (write2file) {
             std::ofstream res_trees_out(mutiple_trees_name);
-            for (auto t : random_solutions) {
-                if (nosupp) {
-                    res_trees_out << t.newick(false, false, false) << endl;
+            
+            // for (auto t : random_solutions) {
+            //     if (nosupp) {
+            //         res_trees_out << t.newick(false, false, false) << endl;
+            //     } else {
+            //         res_trees_out << t.newick(false, false, true) << endl;
+            //     }
+            // }
+
+            if (nosupp) {
+                    res_trees_out << one_rand_tree.newick(false, false, false) << endl;
                 } else {
-                    res_trees_out << t.newick(false, false, true) << endl;
-                }
-            }
+                    res_trees_out << one_rand_tree.newick(false, false, true) << endl;
+                    }
+
         }
     }
 
