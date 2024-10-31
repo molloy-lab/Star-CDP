@@ -32,7 +32,7 @@ SOFTWARE.
 #include<unistd.h>
 #include<iostream>
 #include<unordered_set>
-#include "migration.hpp"
+#include "cc_lshp.hpp"
 
 using namespace std;
 const std::string help =
@@ -262,10 +262,10 @@ int main(int argc, char** argv) {
 	//std::cout << "m: " << m << std::endl;
     //std::cout << "n: " << n << std::endl;
     
-	if (!contract_mode) {
+	if (!contract_mode && !equal_weight) {
 			r = read_mutation_prob(filename2, mut_char_by_state, m);
 	}
-	if (!contract_mode) std::cout << "Finish reading mutation probabilities" << std::endl;
+	if (!contract_mode && !equal_weight) std::cout << "Finish reading mutation probabilities" << std::endl;
 
     auto read_characters_end = std::chrono::high_resolution_clock::now();
 	
@@ -381,25 +381,25 @@ int main(int argc, char** argv) {
     
     if (num_sols > 0) {
         // std::vector<Tree> random_solutions = mutiple_random_trees(I, labels, fre, num_sols);
-        Tree one_rand_tree = one_rand_solution(I,labels,fre, 12345);
-
         if (write2file) {
             std::ofstream res_trees_out(mutiple_trees_name);
             
-            // for (auto t : random_solutions) {
-            //     if (nosupp) {
-            //         res_trees_out << t.newick(false, false, false) << endl;
-            //     } else {
-            //         res_trees_out << t.newick(false, false, true) << endl;
-            //     }
-            // }
+            for (int i = 0; i < num_sols; i++) {
+                Tree one_rand_tree = one_rand_solution(I,labels,fre, 12345 + i);
+                
+                if (no_outgroup) {
+                    one_rand_tree = *one_rand_tree.get_induced_subtree_copy(ingroup);
+                }
 
-            if (nosupp) {
-                    res_trees_out << one_rand_tree.newick(false, false, false) << endl;
+                if (nosupp) {
+                        res_trees_out << one_rand_tree.newick(false, false, false) << endl;
                 } else {
-                    res_trees_out << one_rand_tree.newick(false, false, true) << endl;
-                    }
-
+                            res_trees_out << one_rand_tree.newick(false, false, true) << endl;
+                            }
+                
+            }
+            
+            
         }
     }
 
@@ -487,73 +487,6 @@ int main(int argc, char** argv) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "execution time: " << duration.count() << "ms" << std::endl;
-
-    if (mig_file != "") {
-
-        std::vector<std::string> anatomical_labels_vec(anatomical_labels.begin(), anatomical_labels.end());
-
-        // computing leaves weight
-
-        std::unordered_map<Bipartition, std::unordered_map<std::string, double>> taxon_weight_meta;
-        std::unordered_map<Bipartition, std::unordered_map<std::string, double>> taxon_weight_reseeding;
-
-        bool is_weight = leaf_map_file != "";
-
-        // std::cout << " 475 pruned_cell2anatomical size: " << pruned_cell2anatomical.size() << std::endl;
-        if (is_weight) {
-            load_weights_for_leaves(taxon_weight_meta,
-            taxon_weight_reseeding,
-            primary_tumor,
-            labels,
-            anatomical_labels_vec,
-            label2index,
-            leaves_eq_map,
-            cell2anatomical, 
-            taxon2anatomical);
-        } else {
-            load_weights_for_leaves(taxon_weight_meta,taxon_weight_reseeding,labels,anatomical_labels_vec,label2index,taxon2anatomical);
-        }
-        
-
-        // std::cout << "pruned_cell2anatomical size: " << pruned_cell2anatomical.size() << std::endl;
-        // for (const auto& [k,v] : taxon_weight_meta) {
-        //      std::cout << v.at(primary_tumor) << std::endl;
-
-        // }
-
-
-        std::pair<std::pair<double,double>, std::unordered_map<std::pair<Clade, std::string>,  std::pair<std::pair<Clade, Clade>, std::pair<std::string, std::string>>,PairHash, PairEqual>> mig_res = 
-        mig_dp(primary_tumor, taxon2anatomical,anatomical_labels_vec,Sigma,S,clade2state,I, taxon_weight_meta, taxon_weight_reseeding);
-        
-        double final_meta = mig_res.first.first;
-        double final_reseeding = mig_res.first.second;
-        Tree mig_tree = binary_mig_solution(mig_res.second,fre, S,primary_tumor, labels, 
-        taxon_weight_meta,
-        taxon_weight_reseeding);
-
-        if (no_outgroup) {
-            mig_tree = *mig_tree.get_induced_subtree_copy(ingroup);
-
-        }
-
-        cout << " The most parsimonious refinement of migration tree: " << endl;
-
-        if (nosupp) {
-            cout << mig_tree.newick(false, false, false) << endl;
-            if (write2file) {
-                std::ofstream mig_out(mig_name);
-                mig_out << mig_tree.newick(false, false, false) << endl;
-            }
-        } else {
-            cout << mig_tree.newick(false, false, true) << endl;
-
-            if (write2file) {
-                std::ofstream mig_out(mig_name);
-                mig_out << mig_tree.newick(false, false, true) << endl;
-            }
-        }
-
-    }
 
 
     return 0;
