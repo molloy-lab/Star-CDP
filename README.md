@@ -23,9 +23,9 @@ and then following the instructions in the pop-up window.
 
 Dependency
 -----
-C++ 17 or above
-ASTRAL
-Boost 1.80.0 or above
+1. C++ 17 or above
+2. ASTRAL
+3. Boost 1.80.0 or above
 
 To install ASTRAL following the instructions
 #In either case, before running Star-CDP, you must download ASTRAL and extract the zip folder into the src directory:
@@ -48,6 +48,7 @@ To install boost
   ```
   This installs Boost to ```/usr/local```
 
+These defualt Boost path has been already set up in our [Makefile](https://github.com/molloy-lab/Star-CDP/blob/main/src/Makefile). However, if the Boost has been installed in different path, the ```BOOST_INCLUDE_PATH`` and ```BOOST_LIB_PATH``` should be changed accordingly. 
 Input
 -----
 Star-CDP requires the following three inputs files.
