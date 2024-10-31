@@ -48,7 +48,8 @@ To install boost
   ```
   This installs Boost to ```/usr/local```
 
-These defualt Boost path has been already set up in our [Makefile](https://github.com/molloy-lab/Star-CDP/blob/main/src/Makefile). However, if the Boost has been installed in different path, the ```BOOST_INCLUDE_PATH`` and ```BOOST_LIB_PATH``` should be changed accordingly. 
+These defualt Boost path has been already set up in our [Makefile](https://github.com/molloy-lab/Star-CDP/blob/main/src/Makefile). However, if the Boost has been installed in different path, the ```BOOST_INCLUDE_PATH``` and ```BOOST_LIB_PATH``` should be changed accordingly. 
+
 Input
 -----
 Star-CDP requires the following three inputs files.
