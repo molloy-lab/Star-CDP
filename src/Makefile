@@ -1,21 +1,25 @@
-CC=g++
-CFLAGS= -std=c++17 -O3 -funroll-loops -fomit-frame-pointer 
+# Compiler and flags
+CC = g++
+CFLAGS = -std=c++17 -O3 -funroll-loops -fomit-frame-pointer
 
-#TARGET = star-cdp
-#SRC = $(#wildcard *.cpp)
-#OBJ = $(#patsubst %.cpp, %.o, $(#SRC))
-all: star-cdp
+# Set Boost paths based on OS
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    BOOST_INCLUDE_PATH = /usr/include
+    BOOST_LIB_PATH = /usr/lib
+else ifeq ($(UNAME_S),Darwin)  # macOS
+    BOOST_INCLUDE_PATH = /opt/homebrew/include
+    BOOST_LIB_PATH = /opt/homebrew/lib
+endif
 
-#$(#TARGET): $(#OBJ)
-#	$(#CC) -o $@ $^
+# Target and source files
+TARGET = star-cdp
+SRC = driver.cpp
 
-#%.o: %.cpp
-#	$(#CC) $(#CFLAGS) -I boost_1_80_0 $< -o $@
-
-star-cdp: driver.cpp 
-	$(CC) -DUSE_SHRT $(CFLAGS) -I boost_1_80_0 -o star-cdp driver.cpp 
-
+# Compile target
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -I $(BOOST_INCLUDE_PATH) -L $(BOOST_LIB_PATH) -lboost_system -o $(TARGET) $(SRC)
 
 .PHONY: clean
 clean:
-	rm star-cdp
+	rm -f $(TARGET)
