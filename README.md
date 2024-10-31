@@ -21,13 +21,39 @@ xcode-select --install
 ```
 and then following the instructions in the pop-up window.
 
-In either case, before running Star-CDP, you must download ASTRAL and extract the zip folder into the src directory:
+Dependency
+-----
+C++ 17 or above
+ASTRAL
+Boost 1.80.0 or above
+
+To install ASTRAL following the instructions
+#In either case, before running Star-CDP, you must download ASTRAL and extract the zip folder into the src directory:
 ```
 git clone https://github.com/smirarab/ASTRAL.git
 mv ASTRAL tmp-ASTRAL
 unzip tmp-ASTRAL/Astral.*.zip
 rm -rf tmp-ASTRAL
 ```
+To install boost
+- On mac, it can be install via homebrew by the following instruction.
+  ```
+  brew install boost
+  ```
+  This installs up-to-date Boost(> 1.80.0) to ```/usr/local/```include and ```/usr/local/lib``` (or in /opt/homebrew on Apple Silicon).
+- On Linux
+  ```
+  sudo apt update
+  sudo apt install libboost-all-dev
+  ```
+  This installs Boost to ```/usr/local```
+
+Input
+-----
+Star-CDP requires the following three inputs files.
+1. A file containing the character matrix, a comma-separated values (CSV) file that has rows representing cells and columns representing target sites. With same format as [Startle input character matrix](https://github.com/raphael-group/startle/blob/main/examples/n100_m30_d0.2_s0_p0.2_character_matrix.csv) Values of the character matrix must be either non-negative integers or '-1', with 0 indicating the unmutated state, other integers indicating mutated state, and '-1' as the missing data character.
+2. A priors files containing the all mutations' probabilities, a comma-separated values (CSV) file with only three columns with the same format as [Startle Input priors csv file](https://github.com/raphael-group/startle/blob/main/examples/n100_m30_d0.2_s0_p0.2_mutation_prior.csv). The first column represents the site $x$, the second column represents a mutated state $y$ and the third column represents the probability that the mutation $0->y$ is on site x. 
+3. A trees file containing trees of search space, a files containing lines of newick strings. This file could be constructed via heuristic search, refer to [this example](https://github.com/molloy-lab/Star-CDP/tree/main/example/3724_NT_All) for more details. 
 
 To run Star-CDP, we recommend working through [this example](example/README.md).
 
